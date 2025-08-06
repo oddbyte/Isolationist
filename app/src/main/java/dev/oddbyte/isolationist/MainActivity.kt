@@ -1,17 +1,24 @@
 package dev.oddbyte.isolationist
 
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.RemoteException
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.rosan.dhizuku.api.Dhizuku
 import com.rosan.dhizuku.api.DhizukuRequestPermissionListener
 import dev.oddbyte.isolationist.ui.theme.IsolationistTheme
@@ -22,17 +29,41 @@ import dev.oddbyte.isolationist.ui.theme.IsolationistTheme
  * The only advantage I have over vibe coders is that they cant write code this bad
  */
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
         if (!isPackageInstalled("com.rosan.dhizuku", packageManager) || !Dhizuku.isPermissionGranted()) {
             setContent {
                 IsolationistTheme {
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        Text(
-                            text = "You must install and enable Dhizuku before using this app. Please install and enable Dhizuku and restart this app in order to continue.",
+                        Column(
                             modifier = Modifier.padding(innerPadding)
-                        )
+                        ) {
+                            TopAppBar(
+                                title = {
+                                    Text("Isolationist")
+                                }
+                            )
+                            Text(
+                                text = "You must install and enable Dhizuku before using this app. Please install and enable Dhizuku, then click the button below.",
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .padding(32.dp, 5.dp)
+                            )
+                            Button(
+                                content = { Text("Check Dhizuku") },
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .padding(32.dp, 5.dp),
+                                onClick = {
+                                    val i: Intent = Intent(applicationContext, MainActivity::class.java)
+                                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    applicationContext.startActivity(i)
+                                }
+                            )
+                        }
                     }
                 }
             }
